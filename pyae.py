@@ -53,7 +53,7 @@ class ArithmeticEncoding:
             stage_min = cum_prob
         return stage_probs
 
-    def ae_encoder(self, msg, probability_table):
+    def encode(self, msg, probability_table):
         """
         Encodes a message.
         """
@@ -79,7 +79,7 @@ class ArithmeticEncoding:
 
         return encoder, encoded_msg
 
-    def ae_decoder(self, encoded_msg, msg_length, probability_table):
+    def decode(self, encoded_msg, msg_length, probability_table):
         """
         Decodes a message.
         """
