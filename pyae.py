@@ -6,11 +6,7 @@ class ArithmeticEncoding:
     """
 
     def __init__(self, frequency_table):
-
-        frequency_table = frequency_table
         self.probability_table = self.get_probability_table(frequency_table)
-
-        self.probability_table
 
     def get_probability_table(self, frequency_table):
         """
