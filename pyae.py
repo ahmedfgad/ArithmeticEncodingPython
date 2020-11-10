@@ -5,7 +5,16 @@ class ArithmeticEncoding:
     ArithmeticEncoding is a class for building the arithmetic encoding.
     """
 
-    def __init__(self, frequency_table):
+    def __init__(self, frequency_table, save_stages=False):
+        """
+        frequency_table: Frequency table as a dictionary where key is the symbol and value is the frequency.
+        save_stages: If True, then the intervals of each stage are saved in a list. Note that setting save_stages=True may cause memory overflow if the message is large
+        """
+        
+        self.save_stages = save_stages
+        if(save_stages == True):
+            print("WARNING: Setting save_stages=True may cause memory overflow if the message is large.")
+
         self.probability_table = self.get_probability_table(frequency_table)
 
     def get_probability_table(self, frequency_table):
@@ -20,13 +29,13 @@ class ArithmeticEncoding:
 
         return probability_table
 
-    def get_encoded_value(self, encoder):
+    def get_encoded_value(self, last_stage_probs):
         """
         After encoding the entire message, this method returns the single value that represents the entire message.
         """
-        last_stage = list(encoder[-1].values())
+        last_stage_probs = list(last_stage_probs.values())
         last_stage_values = []
-        for sublist in last_stage:
+        for sublist in last_stage_probs:
             for element in sublist:
                 last_stage_values.append(element)
 
@@ -53,9 +62,12 @@ class ArithmeticEncoding:
         """
         Encodes a message.
         """
+        
+        # Make sure 
+        msg = list(msg)
 
         encoder = []
-    
+
         stage_min = Decimal(0.0)
         stage_max = Decimal(1.0)
 
@@ -66,14 +78,17 @@ class ArithmeticEncoding:
             stage_min = stage_probs[msg_term][0]
             stage_max = stage_probs[msg_term][1]
 
-            encoder.append(stage_probs)
+            if self.save_stages:
+                encoder.append(stage_probs)
 
-        stage_probs = self.process_stage(probability_table, stage_min, stage_max)
-        encoder.append(stage_probs)
+        last_stage_probs = self.process_stage(probability_table, stage_min, stage_max)
+        
+        if self.save_stages:
+            encoder.append(last_stage_probs)
 
-        encoded_msg = self.get_encoded_value(encoder)
+        encoded_msg = self.get_encoded_value(last_stage_probs)
 
-        return encoder, encoded_msg
+        return encoded_msg, encoder
 
     def decode(self, encoded_msg, msg_length, probability_table):
         """
@@ -81,7 +96,8 @@ class ArithmeticEncoding:
         """
 
         decoder = []
-        decoded_msg = ""
+
+        decoded_msg = []
 
         stage_min = Decimal(0.0)
         stage_max = Decimal(1.0)
@@ -93,13 +109,16 @@ class ArithmeticEncoding:
                 if encoded_msg >= value[0] and encoded_msg <= value[1]:
                     break
 
-            decoded_msg = decoded_msg + msg_term
+            decoded_msg.append(msg_term)
+
             stage_min = stage_probs[msg_term][0]
             stage_max = stage_probs[msg_term][1]
 
-            decoder.append(stage_probs)
+            if self.save_stages:
+                decoder.append(stage_probs)
 
-        stage_probs = self.process_stage(probability_table, stage_min, stage_max)
-        decoder.append(stage_probs)
+        if self.save_stages:
+            last_stage_probs = self.process_stage(probability_table, stage_min, stage_max)
+            decoder.append(last_stage_probs)
 
-        return decoder, decoded_msg
+        return decoded_msg, decoder
