@@ -24,14 +24,20 @@ import pyae
 
 ## Instantiate the `ArithmeticEncoding` Class
 
-Create an instance of the `ArithmeticEncoding` class. Its constructor accepts the frequency table which is a dictionary mapping each possible character to its frequency. According to this frequency table, the messages to be encoded/decoded must have only the 3 characters **a**, **b**, and **c**.
+Create an instance of the `ArithmeticEncoding` class. Its constructor accepts 2 arguments:
+
+1. `frequency_table`: The frequency table as a dictionary where key is the symbol and value is the frequency.
+2. `save_stages`: If `True`, then the intervals of each stage are saved in a list. Note that setting `save_stages=True` may cause memory overflow if the message is large
+
+According to the following frequency table, the messages to be encoded/decoded must have only the 3 characters **a**, **b**, and **c**.
 
 ```python
 frequency_table = {"a": 2,
                    "b": 7,
                    "c": 1}
 
-AE = pyae.ArithmeticEncoding(frequency_table)
+AE = pyae.ArithmeticEncoding(frequency_table=frequency_table,
+                            save_stages=True)
 ```
 
 ## Prepare a Message
@@ -44,21 +50,27 @@ original_msg = "abc"
 
 ## Encode the Message
 
-Encode the message using the `encode()` method. It accepts the message to be encoded and the probability table. It returns the encoder and the encoded message (single double value).
+Encode the message using the `encode()` method. It accepts the message to be encoded and the probability table. It returns the encoded message (single double value) and the encoder stages.
 
 ```python
-encoder, encoded_msg = AE.encode(msg=original_msg, 
+encoded_msg, encoder = AE.encode(msg=original_msg, 
                                  probability_table=AE.probability_table)
 ```
 
 ## Decode the Message
 
-Decode the message using the `decode()` method. It accepts the encoded message, message length, and the probability table. It returns the decoder and the decoded message.
+Decode the message using the `decode()` method. It accepts the encoded message, message length, and the probability table. It returns the decoded message and the decoder stages.
 
 ```python
-decoder, decoded_msg = AE.decode(encoded_msg=encoded_msg, 
+decoded_msg, decoder = AE.decode(encoded_msg=encoded_msg, 
                                  msg_length=len(original_msg),
                                  probability_table=AE.probability_table)
+```
+
+Note that the symbols in the decoded message are returned in a `list`. If the original message is a string, then consider converting the list into a string using `join()` function as follows.
+
+```python
+decoded_msg = "".join(decoded_msg)
 ```
 
 # <u>IMPORTANT</u>: `double` Module
@@ -88,20 +100,22 @@ frequency_table = {"a": 2,
                    "b": 7,
                    "c": 1}
 
-AE = pyae.ArithmeticEncoding(frequency_table)
+AE = pyae.ArithmeticEncoding(frequency_table=frequency_table,
+                            save_stages=True)
 
 original_msg = "abc"
 print("Original Message: {msg}".format(msg=original_msg))
 
-encoder, encoded_msg = AE.encode(msg=original_msg, 
+encoded_msg, encoder = AE.encode(msg=original_msg, 
                                  probability_table=AE.probability_table)
 print("Encoded Message: {msg}".format(msg=encoded_msg))
 
-decoder, decoded_msg = AE.decode(encoded_msg=encoded_msg, 
+decoded_msg, decoder = AE.decode(encoded_msg=encoded_msg, 
                                  msg_length=len(original_msg),
                                  probability_table=AE.probability_table)
 print("Decoded Message: {msg}".format(msg=decoded_msg))
 
+decoded_msg = "".join(decoded_msg)
 print("Message Decoded Successfully? {result}".format(result=original_msg == decoded_msg))
 ```
 
@@ -164,20 +178,22 @@ frequency_table = {"a": 2,
                    "b": 7,
                    "c": 1}
 
-AE = pyae.ArithmeticEncoding(frequency_table)
+AE = pyae.ArithmeticEncoding(frequency_table=frequency_table,
+                            save_stages=True)
 
 original_msg = "abc"*20
 print("Original Message: {msg}".format(msg=original_msg))
 
-encoder, encoded_msg = AE.encode(msg=original_msg, 
+encoded_msg, encoder = AE.encode(msg=original_msg, 
                                  probability_table=AE.probability_table)
 print("Encoded Message: {msg}".format(msg=encoded_msg))
 
-decoder, decoded_msg = AE.decode(encoded_msg=encoded_msg, 
+decoded_msg, decoder = AE.decode(encoded_msg=encoded_msg, 
                                  msg_length=len(original_msg),
                                  probability_table=AE.probability_table)
 print("Decoded Message: {msg}".format(msg=decoded_msg))
 
+decoded_msg = "".join(decoded_msg)
 print("Message Decoded Successfully? {result}".format(result=original_msg == decoded_msg))
 ```
 
@@ -210,20 +226,22 @@ frequency_table = {"a": 2,
                    "b": 7,
                    "c": 1}
 
-AE = pyae.ArithmeticEncoding(frequency_table)
+AE = pyae.ArithmeticEncoding(frequency_table=frequency_table,
+                            save_stages=True)
 
 original_msg = "abc"*20
 print("Original Message: {msg}".format(msg=original_msg))
 
-encoder, encoded_msg = AE.encode(msg=original_msg, 
+encoded_msg, encoder = AE.encode(msg=original_msg, 
                                  probability_table=AE.probability_table)
 print("Encoded Message: {msg}".format(msg=encoded_msg))
 
-decoder, decoded_msg = AE.decode(encoded_msg=encoded_msg, 
+decoded_msg, decoder = AE.decode(encoded_msg=encoded_msg, 
                                  msg_length=len(original_msg),
                                  probability_table=AE.probability_table)
 print("Decoded Message: {msg}".format(msg=decoded_msg))
 
+decoded_msg = "".join(decoded_msg)
 print("Message Decoded Successfully? {result}".format(result=original_msg == decoded_msg))
 ```
 
