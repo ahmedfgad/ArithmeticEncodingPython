@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import Decimal # Used to offer any user-defined precision.
 
 class ArithmeticEncoding:
     """
