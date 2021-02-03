@@ -1,4 +1,4 @@
-import scipy.io
+import scipy.misc
 import pyae
 import numpy
 import matplotlib.pyplot
