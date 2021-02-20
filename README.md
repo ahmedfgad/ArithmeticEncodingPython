@@ -2,6 +2,8 @@
 
 This project implements the lossless data compression technique called **arithmetic encoding (AE)**. The project is simple and has just some basic features.
 
+The project supports encoding the input as both a floating-point value and a binary code.
+
 The project has a main module called `pyae.py` which contains a class called `ArithmeticEncoding` to encode and decode messages.
 
 # Usage Steps
@@ -12,7 +14,8 @@ To use the project, follow these steps:
 2. Instantiate the `ArithmeticEncoding` Class
 3. Prepare a Message
 4. Encode the Message
-5. Decode the Message
+5. Get the binary code of the encoded message.
+6. Decode the Message
 
 ## Import `pyae`
 
@@ -53,8 +56,17 @@ original_msg = "abc"
 Encode the message using the `encode()` method. It accepts the message to be encoded and the probability table. It returns the encoded message (single double value) and the encoder stages.
 
 ```python
-encoded_msg, encoder = AE.encode(msg=original_msg, 
-                                 probability_table=AE.probability_table)
+encoded_msg, encoder , interval_min_value, interval_max_value = AE.encode(msg=original_msg, 
+                                                                          probability_table=AE.probability_table)
+```
+
+## Get the Binary Code of the Encoded Message
+
+Convert the floating-point value returned from the `AE.encode()` function into a binary code using the `AE.encode_binary()` function.
+
+```python
+binary_code, encoder_binary = AE.encode_binary(float_interval_min=interval_min_value,
+                                               float_interval_max=interval_max_value)
 ```
 
 ## Decode the Message
@@ -95,6 +107,7 @@ The [`example.py`](/example.py) script has an example that compresses the messag
 import pyae
 
 # Example for encoding a simple text message using the PyAE module.
+# This example returns the floating-point value in addition to its binary code that encodes the message. 
 
 frequency_table = {"a": 2,
                    "b": 7,
@@ -106,16 +119,22 @@ AE = pyae.ArithmeticEncoding(frequency_table=frequency_table,
 original_msg = "abc"
 print("Original Message: {msg}".format(msg=original_msg))
 
-encoded_msg, encoder = AE.encode(msg=original_msg, 
-                                 probability_table=AE.probability_table)
+# Encode the message
+encoded_msg, encoder , interval_min_value, interval_max_value = AE.encode(msg=original_msg, 
+                                                                          probability_table=AE.probability_table)
 print("Encoded Message: {msg}".format(msg=encoded_msg))
 
+# Get the binary code out of the floating-point value
+binary_code, encoder_binary = AE.encode_binary(float_interval_min=interval_min_value,
+                                               float_interval_max=interval_max_value)
+print("The binary code is: {binary_code}".format(binary_code=binary_code))
+
+# Decode the message
 decoded_msg, decoder = AE.decode(encoded_msg=encoded_msg, 
                                  msg_length=len(original_msg),
                                  probability_table=AE.probability_table)
-print("Decoded Message: {msg}".format(msg=decoded_msg))
-
 decoded_msg = "".join(decoded_msg)
+print("Decoded Message: {msg}".format(msg=decoded_msg))
 print("Message Decoded Successfully? {result}".format(result=original_msg == decoded_msg))
 ```
 
@@ -124,6 +143,7 @@ The printed messages out of the code are:
 ```
 Original Message: abc
 Encoded Message: 0.1729999999999999989175325511
+The binary code is: 0.0010110
 Decoded Message: abc
 Message Decoded Successfully? True
 ```
@@ -161,6 +181,22 @@ print(encoder)
    Decimal('0.5599999999999999349409307570')]}]
 ```
 
+Here is the binary encoder:
+
+```python
+print(encoder_binary)
+```
+
+```python
+[{0: ['0.0', '0.1'], 1: ['0.1', '1.0']},
+ {0: ['0.00', '0.01'], 1: ['0.01', '0.1']},
+ {0: ['0.000', '0.001'], 1: ['0.001', '0.01']},
+ {0: ['0.0010', '0.0011'], 1: ['0.0011', '0.01']},
+ {0: ['0.00100', '0.00101'], 1: ['0.00101', '0.0011']},
+ {0: ['0.001010', '0.001011'], 1: ['0.001011', '0.0011']},
+ {0: ['0.0010110', '0.0010111'], 1: ['0.0010111', '0.0011']}]
+```
+
 ## Low Precision
 
 Assume the message to be encoded is `"abc"*20` (i.e. `abc` repeated 20 times) while using the default precision 28. The length of the message is 60.
@@ -184,16 +220,15 @@ AE = pyae.ArithmeticEncoding(frequency_table=frequency_table,
 original_msg = "abc"*20
 print("Original Message: {msg}".format(msg=original_msg))
 
-encoded_msg, encoder = AE.encode(msg=original_msg, 
-                                 probability_table=AE.probability_table)
+encoded_msg, encoder , interval_min_value, interval_max_value = AE.encode(msg=original_msg, 
+                                                                          probability_table=AE.probability_table)
 print("Encoded Message: {msg}".format(msg=encoded_msg))
 
 decoded_msg, decoder = AE.decode(encoded_msg=encoded_msg, 
                                  msg_length=len(original_msg),
                                  probability_table=AE.probability_table)
-print("Decoded Message: {msg}".format(msg=decoded_msg))
-
 decoded_msg = "".join(decoded_msg)
+print("Decoded Message: {msg}".format(msg=decoded_msg))
 print("Message Decoded Successfully? {result}".format(result=original_msg == decoded_msg))
 ```
 
@@ -232,16 +267,15 @@ AE = pyae.ArithmeticEncoding(frequency_table=frequency_table,
 original_msg = "abc"*20
 print("Original Message: {msg}".format(msg=original_msg))
 
-encoded_msg, encoder = AE.encode(msg=original_msg, 
-                                 probability_table=AE.probability_table)
+encoded_msg, encoder , interval_min_value, interval_max_value = AE.encode(msg=original_msg, 
+                                                                          probability_table=AE.probability_table)
 print("Encoded Message: {msg}".format(msg=encoded_msg))
 
 decoded_msg, decoder = AE.decode(encoded_msg=encoded_msg, 
                                  msg_length=len(original_msg),
                                  probability_table=AE.probability_table)
-print("Decoded Message: {msg}".format(msg=decoded_msg))
-
 decoded_msg = "".join(decoded_msg)
+print("Decoded Message: {msg}".format(msg=decoded_msg))
 print("Message Decoded Successfully? {result}".format(result=original_msg == decoded_msg))
 ```
 

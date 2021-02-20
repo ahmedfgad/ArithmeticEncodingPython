@@ -4,8 +4,7 @@ import numpy
 import matplotlib.pyplot
 
 # Example for encoding an image using the PyAE module.
-# This example only returns the floating-point value that encodes the image. 
-# Check the example_image_binary.py to return the binary code of the floating-point value.
+# This example returns the floating-point value in addition to its binary code that encodes the image. 
 
 # Change the precision to a bigger value
 from decimal import getcontext
@@ -26,11 +25,16 @@ hist, bin_edges = numpy.histogram(a=im,
 frequency_table = {key: value for key, value in zip(bin_edges[0:256], hist)}
 
 # Create an instance of the ArithmeticEncoding class.
-AE = pyae.ArithmeticEncoding(frequency_table=frequency_table)
+AE = pyae.ArithmeticEncoding(frequency_table=frequency_table, save_stages=True)
 
 # Encode the message
 encoded_msg, encoder, interval_min_value, interval_max_value = AE.encode(msg=msg, 
                                                                          probability_table=AE.probability_table)
+
+# Get the binary code that encodes the image
+binary_code, encoder_binary = AE.encode_binary(float_interval_min=interval_min_value,
+                                               float_interval_max=interval_max_value)
+print("The binary code is: {binary_code}".format(binary_code=binary_code))
 
 # Decode the message
 decoded_msg, decoder = AE.decode(encoded_msg=encoded_msg, 
