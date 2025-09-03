@@ -1,0 +1,85 @@
+[tool.poetry]
+name = "ArithmeticEncodingPython"
+version = "1.0.0"
+description = "Data Compression using Arithmetic Encoding in Python"
+authors = ["Ahmed Fawzy Gad <ahmed.f.gad@gmail.com>"]
+readme = "README.md"
+homepage = "https://github.com/ahmedfgad/ArithmeticEncodingPython"
+repository = "https://github.com/ahmedfgad/ArithmeticEncodingPython"
+keywords = ["arithmetic-encoding", "data-compression", "python"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+packages = [{include = "pyae.py"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.0.0"
+pytest-cov = "^4.0.0"
+pytest-mock = "^3.12.0"
+
+[tool.poetry.scripts]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--verbose",
+    "--cov=pyae",
+    "--cov-report=term-missing",
+    "--cov-report=html:htmlcov",
+    "--cov-report=xml:coverage.xml",
+    "--cov-fail-under=80",
+]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests", 
+    "slow: Slow tests that take more time to run",
+]
+filterwarnings = [
+    "error",
+    "ignore::UserWarning",
+    "ignore::DeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "tests/*",
+    "setup.py",
+    "*/venv/*",
+    "*/.venv/*",
+    "*/site-packages/*",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+show_missing = true
+precision = 2
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
